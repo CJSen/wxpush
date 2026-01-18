@@ -2,6 +2,7 @@ package web
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"os"
 	"strings"
@@ -9,10 +10,19 @@ import (
 )
 
 const (
-	testPagePath    = "web/test.html"
-	homePagePath    = "web/home.html"
-	messagePagePath = "web/message.html"
+	testPagePath = "web/test.html"
+	homePagePath = "web/home.html"
 )
+
+var messagePagePath = "web/message.html"
+
+func SetMessagePagePath(path string) {
+	fmt.Println("MessageHtml is:", path)
+	if strings.TrimSpace(path) == "" {
+		return
+	}
+	messagePagePath = path
+}
 
 func RenderTestPage(token string) string {
 	html := readFile(testPagePath)

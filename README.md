@@ -42,11 +42,12 @@ go run main.go
 APIToken: your_token
 AppID: your_appid
 Secret: your_secret
-UserID: openid1|openid2
+UserID: openid1|openid2  # 多个用户用 | 分割
 TemplateID: your_template_id
 BaseURL: http://localhost:8080/msg
-DBPath: wxpush.db
+DBPath: ./data/wxpush.db
 Port: 8080
+MessageHtml: ./web/message.html  # 默认使用 ./web/message.html，也可以指定模版(绝对路径和相对路径均可)。
 ```
 
 字段说明：
@@ -58,6 +59,19 @@ Port: 8080
 - `BaseURL`：消息详情页基础地址，建议配置为 `/msg`
 - `DBPath`：SQLite 数据库路径，默认 `data/wxpush.db`
 - `Port`：服务端口，默认 `8080`
+- `MessageHtml`：消息详情页 HTML 文件路径，可无限换肤，默认为 `./web/message.html`，可使用字段为:
+```go
+使用方法{{.FieldName}}
+ID         int64      数据库id
+MsgID      string     消息 ID（uuid7）
+TokenID    string     鉴权 token（uuid7）
+Title      string     消息标题
+Content    string     消息内容
+UserID     string     接收用户 OpenID
+TemplateID string     模板消息 ID
+BaseURL    string     消息详情页基础地址
+CreatedAt  time.Time  创建时间
+```
 
 ## 接口使用介绍
 

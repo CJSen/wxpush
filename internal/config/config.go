@@ -7,6 +7,7 @@ type Config struct {
 	UserID     string `yaml:"UserID"`
 	TemplateID string `yaml:"TemplateID"`
 	BaseURL    string `yaml:"BaseURL"`
+	MessageHtml string `yaml:"MessageHtml"`
 	DBPath     string `yaml:"DBPath"`
 	Port       int    `yaml:"Port"`
 }
@@ -17,5 +18,8 @@ func (c *Config) applyDefaults() {
 	}
 	if c.Port == 0 {
 		c.Port = 8080
+	}
+	if c.MessageHtml == "" {
+		c.MessageHtml = "web/message.html"
 	}
 }

@@ -1,8 +1,9 @@
 APIToken: your_token
 AppID: your_appid
 Secret: your_secret
-UserID: openid1|openid2
+UserID: openid1|openid2  # 多个用户用 | 分割
 TemplateID: your_template_id
 BaseURL: http://localhost:8080/msg
-DBPath: wxpush.db
+DBPath: ./data/wxpush.db
 Port: 8080
+MessageHtml: ./web/message.html  # 默认使用 ./web/message.html，也可以指定模版(绝对路径和相对路径均可)。

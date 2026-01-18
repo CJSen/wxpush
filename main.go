@@ -8,6 +8,7 @@ import (
 
 	"wxpush/internal/config"
 	"wxpush/internal/handler"
+	"wxpush/internal/web"
 )
 
 func main() {
@@ -17,6 +18,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "load config error: %v\n", err)
 		os.Exit(1)
 	}
+	web.SetMessagePagePath(cfg.MessageHtml)
 	h, err := handler.New(cfg)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "init error: %v\n", err)
