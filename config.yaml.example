@@ -1,0 +1,8 @@
+APIToken: your_token
+AppID: your_appid
+Secret: your_secret
+UserID: openid1|openid2
+TemplateID: your_template_id
+BaseURL: http://localhost:8080/msg
+DBPath: wxpush.db
+Port: 8080

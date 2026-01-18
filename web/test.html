@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>WXPush 测试页面</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 24px;
+        background: linear-gradient(170deg, #f3e8ff 0%, #ffffff 100%);
+        color: #1f2937;
+        box-sizing: border-box;
+      }
+      .container {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 40px;
+        max-width: 720px;
+        width: 100%;
+        text-align: left;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .container:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 32px;
+        font-weight: 700;
+        text-align: center;
+        background: linear-gradient(90deg, #8b5cf6, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hint {
+        color: #4b5563;
+        margin: 0 0 24px;
+        font-size: 16px;
+        line-height: 1.6;
+        text-align: center;
+      }
+      label {
+        display: block;
+        margin: 16px 0 8px;
+        font-weight: 700;
+        color: #374151;
+      }
+      input[type=text], textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d4d4d8;
+        border-radius: 12px;
+        background: #f4f4f5;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+        font-family: inherit;
+        font-size: 14px;
+      }
+      input[type=text]:focus, textarea:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        background: #ffffff;
+        box-shadow: 0 0 0 2px #c4b5fd;
+      }
+      button {
+        margin-top: 24px;
+        padding: 12px 20px;
+        border-radius: 12px;
+        border: 0;
+        background: #8b5cf6;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.2s ease;
+      }
+      button:hover {
+        background: #7c3aed;
+        transform: translateY(-2px);
+      }
+      button#clearBtn {
+         background: #f4f4f5;
+         color: #374151;
+         border: 1px solid #e4e4e7;
+      }
+       button#clearBtn:hover {
+         background: #ffffff;
+         border-color: #d4d4d8;
+         color: #1f2937;
+      }
+      pre {
+        background: #1f2937;
+        color: #e5e7eb;
+        padding: 16px;
+        border-radius: 12px;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>WXPush 测试页面</h1>
+      <p class="hint">当前 token (来自路径)：<strong>{{TOKEN}}</strong></p>
+
+      <form id="testForm" method="POST" action="/wxsend">
+
+        <label for="title">标题 (title)</label>
+        <input id="title" name="title" type="text" value="测试标题" />
+
+        <label for="content">内容 (content)</label>
+        <textarea id="content" name="content" rows="4">这是测试内容</textarea>
+
+        <label for="userid">用户 ID (userid，可选，多用户用 | 分隔)</label>
+        <input id="userid" name="userid" type="text" placeholder="例如: OPENID1|OPENID2" />
+
+        <label for="appid">WX_APPID (可选，留空使用配置文件)</label>
+        <input id="appid" name="appid" type="text" />
+
+        <label for="secret">WX_SECRET (可选，留空使用配置文件)</label>
+        <input id="secret" name="secret" type="text" />
+
+        <label for="template_id">模板 ID (template_id，可选)</label>
+        <input id="template_id" name="template_id" type="text" />
+
+        <label for="base_url">跳转链接 base_url (可选)</label>
+        <input id="base_url" name="base_url" type="text" />
+
+        <input type="hidden" name="token" id="hiddenToken" value="{{TOKEN}}" />
+
+        <div style="display:flex;gap:12px;align-items:center">
+          <button id="sendBtn" type="submit">发送测试请求</button>
+          <button type="button" id="clearBtn">清空</button>
+        </div>
+      </form>
+      <div id="responseCard" style="display:none; margin-top: 20px;">
+        <label for="responseArea">响应</label>
+        <pre id="responseArea"></pre>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById('testForm');
+      const sendBtn = document.getElementById('sendBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const responseArea = document.getElementById('responseArea');
+      const responseCard = document.getElementById('responseCard');
+
+      if (form && sendBtn && clearBtn && responseArea && responseCard) {
+        clearBtn.addEventListener('click', () => {
+          document.getElementById('title').value = '';
+          document.getElementById('content').value = '';
+          document.getElementById('userid').value = '';
+          document.getElementById('appid').value = '';
+          document.getElementById('secret').value = '';
+          document.getElementById('template_id').value = '';
+          document.getElementById('base_url').value = '';
+          responseArea.textContent = '';
+          responseCard.style.display = 'none';
+        });
+
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          sendBtn.disabled = true;
+          const originalText = sendBtn.textContent;
+          sendBtn.textContent = '发送中...';
+          responseCard.style.display = 'none';
+
+          const formData = new FormData(form);
+          const payload = {};
+          for (const [k, v] of formData.entries()) {
+             if (k !== 'token' && v) {
+                payload[k] = v;
+             }
+          }
+
+          try {
+            const headers = { 'Content-Type': 'application/json' };
+            const token = document.getElementById('hiddenToken').value;
+            if (token) headers['Authorization'] = token;
+
+            const response = await fetch('/wxsend', { method: 'POST', headers, body: JSON.stringify(payload) });
+            const responseText = await response.text();
+            responseArea.textContent = 'Status: ' + response.status + '\n\n' + responseText;
+            responseCard.style.display = 'block';
+          } catch (err) {
+            responseArea.textContent = 'Fetch error: ' + err.message;
+            responseCard.style.display = 'block';
+          } finally {
+            sendBtn.disabled = false;
+            sendBtn.textContent = originalText;
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
